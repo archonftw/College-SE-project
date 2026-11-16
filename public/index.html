@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart Placement Preparation Protocol</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f6f8;--card:#fff;--ink:#14232e;--mut:#5d7282;--line:#d7e2e8;--acc:#0e7c7b;--accink:#fff;--ok:#dff3e7;--okb:#2e9a5b;--bad:#fbe3df;--badb:#c8553d;--tag:#e4eef2;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1a21;--card:#172630;--ink:#e6eef2;--mut:#93a8b4;--line:#2a3d49;--acc:#3cc2bd;--accink:#06201f;--ok:#14382a;--okb:#3fbf7a;--bad:#41211b;--badb:#ea7b63;--tag:#223641;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1a21;--card:#172630;--ink:#e6eef2;--mut:#93a8b4;--line:#2a3d49;--acc:#3cc2bd;--accink:#06201f;--ok:#14382a;--okb:#3fbf7a;--bad:#41211b;--badb:#ea7b63;--tag:#223641;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Source Sans 3",system-ui,sans-serif}
+h1,h2,h3,.brand,.big{font-family:Sora,system-ui,sans-serif;margin:0 0 .5rem;line-height:1.2}
+h2{font-size:1.5rem}h3{font-size:1.1rem;margin-top:1.5rem}
+.mut{color:var(--mut)}
+header{display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;padding:.75rem 1rem;border-bottom:1px solid var(--line);background:var(--card)}
+.brand{font-size:1.1rem;color:var(--acc);margin:0 .5rem 0 0}
+nav{display:flex;gap:.25rem;flex:1;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--ink);padding:.45rem .8rem}
+button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+nav button{border-color:transparent}nav button.on{background:var(--tag);font-weight:600}
+.pri{background:var(--acc);color:var(--accink);border-color:var(--acc);font-weight:600}
+.ghost{color:var(--mut)}
+main{max-width:780px;margin:0 auto;padding:1.25rem 1rem 3rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem;margin:0 0 .75rem}
+.hero{display:flex;gap:1.25rem;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.25rem;margin:1rem 0}
+.big{font-size:3.5rem;font-weight:700;color:var(--acc);margin:0;min-width:7rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem}
+.meter{height:10px;background:var(--tag);border-radius:6px;overflow:hidden;margin-top:.4rem}
+.meter i{display:block;height:100%;background:var(--acc)}
+.row{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--line)}
+.tag{display:inline-block;background:var(--tag);border-radius:6px;padding:0 .45rem;font-size:.8rem;color:var(--mut)}
+.opt{display:flex;gap:.6rem;align-items:center;padding:.5rem .7rem;border:1px solid var(--line);border-radius:8px;margin:.35rem 0;cursor:pointer}
+.opt.ok{background:var(--ok);border-color:var(--okb)}.opt.bad{background:var(--bad);border-color:var(--badb)}
+.task{display:flex;gap:.8rem;align-items:flex-start;cursor:pointer}
+.task input{margin-top:.4rem}
+.auth{max-width:420px;margin:0 auto;padding:2rem 1rem}
+.auth h1{font-size:1.6rem}
+.tabs{display:flex;gap:.25rem;margin-bottom:.75rem}.tabs button.on{background:var(--tag);font-weight:600}
+label{display:block;margin:.5rem 0;font-weight:600}
+input[type=text],input[type=email],input[type=password]{display:block;width:100%;font:inherit;padding:.55rem .7rem;margin-top:.25rem;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.err{color:var(--badb);min-height:1.5rem;margin:.25rem 0}
+.chart{display:flex;align-items:flex-end;gap:6px;height:120px;margin:.5rem 0 1rem}
+.chart div{flex:1;background:var(--acc);border-radius:4px 4px 0 0;min-width:10px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:.45rem .5rem;border-bottom:1px solid var(--line)}
+@media (max-width:520px){.hero{flex-direction:column;align-items:flex-start}.big{font-size:2.8rem}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const CATS=["Aptitude","Programming","Core CS"];
+// [category, topic, question, options, correct index]
+const Q=[
+["Aptitude","Percentages","A price rises 20%, then falls 20%. The net change is",["0%","-4%","+4%","-2%"],1],
+["Aptitude","Time & Work","A can finish a job in 10 days and B in 15 days. Working together they take",["5 days","6 days","8 days","12.5 days"],1],
+["Aptitude","Ratios","Two numbers are in the ratio 3:5 and their sum is 64. The larger number is",["24","32","38","40"],3],
+["Aptitude","Profit & Loss","An item bought for 800 is sold for 920. The profit percentage is",["12%","15%","18%","20%"],1],
+["Aptitude","Series","What comes next: 2, 6, 12, 20, 30, ?",["40","42","44","46"],1],
+["Aptitude","Speed","A train at 60 km/h passes a 150 m platform pole. How long does it take?",["6 s","9 s","12 s","15 s"],1],
+["Programming","Complexity","Time complexity of binary search on a sorted array is",["O(n)","O(n log n)","O(log n)","O(1)"],2],
+["Programming","Stacks","Which order does a stack follow?",["FIFO","LIFO","Random","Priority"],1],
+["Programming","Arrays","In a 0-indexed array of size n, the last element is at index",["n","n+1","n-1","n-2"],2],
+["Programming","Sorting","Worst-case time complexity of quick sort is",["O(n)","O(n log n)","O(log n)","O(n^2)"],3],
+["Programming","Recursion","f(n) = n + f(n-1) with f(0) = 0. What is f(4)?",["4","8","10","24"],2],
+["Programming","Trees","In-order traversal of a binary search tree visits nodes in",["Sorted order","Level order","Reverse level order","Random order"],0],
+["Core CS","OS","Which is NOT a necessary condition for deadlock?",["Mutual exclusion","Hold and wait","No preemption","Preemption"],3],
+["Core CS","DBMS","Which constraint guarantees unique, non-null values for each row?",["Foreign key","Primary key","Check","Default"],1],
+["Core CS","SQL","Which clause filters groups after GROUP BY?",["WHERE","ORDER BY","HAVING","LIMIT"],2],
+["Core CS","Networks","Which OSI layer is responsible for routing packets?",["Data link","Transport","Session","Network"],3],
+["Core CS","OOP","One interface with many implementations is called",["Encapsulation","Polymorphism","Abstraction","Inheritance"],1],
+["Core CS","Networks","Default port used by HTTP is",["21","25","80","443"],2]
+];
+const TOPICS=[...new Set(Q.map(q=>q[1]))];
+const RES={
+"Percentages":"Revise successive change and base-value shortcuts. Solve 15 percentage problems.",
+"Time & Work":"Learn the 1/days method. Solve 10 time-and-work and pipes problems.",
+"Ratios":"Practise splitting a total in a given ratio. Solve 10 problems.",
+"Profit & Loss":"Memorise the profit % and discount formulas. Solve 10 problems.",
+"Series":"Study difference, ratio and square/cube patterns. Solve 15 series questions.",
+"Speed":"Practise km/h to m/s conversion and train problems. Solve 10 problems.",
+"Complexity":"Learn Big-O for common algorithms. Write a table of 10 algorithms with their time and space cost.",
+"Stacks":"Implement a stack with an array. Solve valid parentheses and next greater element.",
+"Arrays":"Solve two-sum, max subarray and rotate array on any coding site.",
+"Sorting":"Code bubble, merge and quick sort. Note best, average and worst cases.",
+"Recursion":"Trace factorial and Fibonacci call stacks. Solve 5 recursion problems.",
+"Trees":"Implement BST insert and the 3 DFS traversals. Solve 5 tree problems.",
+"OS":"Revise processes, scheduling and deadlock. Read 20 interview questions.",
+"DBMS":"Revise keys, normalisation (up to BCNF) and ACID properties.",
+"SQL":"Practise joins, GROUP BY and HAVING with 15 queries.",
+"Networks":"Revise the OSI and TCP/IP layers and common ports.",
+"OOP":"Revise the four pillars with a real code example each."
+};
+let me=null,user=null,data={attempts:[],done:{}},view="home",quiz=null,mode="login",msg="";
+const TK="spp_token";
+const tok=()=>{try{return localStorage.getItem(TK)}catch(e){return null}};
+async function api(path,method="GET",body){const h={"Content-Type":"application/json"};if(tok())h.Authorization="Bearer "+tok();const r=await fetch("/api"+path,{method,headers:h,body:body?JSON.stringify(body):undefined});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||"Request failed");return j}
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const U=()=>data;
+const pc=v=>v&&v[1]?Math.round(100*v[0]/v[1]):null;
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+async function hash(p){try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(p));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}catch(e){return btoa(p)}}
+
+function stats(){const t={},c={};for(const a of U().attempts){for(const k in a.t){t[k]=t[k]||[0,0];t[k][0]+=a.t[k][0];t[k][1]+=a.t[k][1]}for(const k in a.c){c[k]=c[k]||[0,0];c[k][0]+=a.c[k][0];c[k][1]+=a.c[k][1]}}return{t,c}}
+function ready(){const s=stats();return Math.round(CATS.reduce((n,c)=>n+(pc(s.c[c])||0),0)/CATS.length)}
+function weakList(){const s=stats();return TOPICS.map((t,i)=>({t,i,p:pc(s.t[t])})).filter(x=>x.p==null||x.p<70).sort((a,b)=>(a.p==null?-1:a.p)-(b.p==null?-1:b.p))}
+
+function setMode(m){mode=m;msg="";app()}
+async function auth(){
+  const e=$("#e").value.trim().toLowerCase(),p=$("#p").value,n=mode=="reg"?$("#n").value.trim():"";
+  if(!/^\S+@\S+\.\S+$/.test(e)||p.length<6){msg="Enter a valid email and a password of at least 6 characters.";return app()}
+  if(mode=="reg"&&!n){msg="Enter your name.";return app()}
+  try{const r=await api(mode=="reg"?"/register":"/login","POST",{name:n,email:e,password:p});localStorage.setItem(TK,r.token);await loadData();view="home";msg=""}catch(x){msg=x.message}
+  app();
+}
+async function loadData(){const r=await api("/data");user=r.user;data={attempts:r.attempts,done:r.done};me=user.email}
+function out(){try{localStorage.removeItem(TK)}catch(e){}me=null;user=null;quiz=null;app()}
+function go(v){view=v;quiz=null;app()}
+
+function startQuiz(title,kind,items){quiz={title,kind,items:shuffle(items),a:{},done:false};view="test";app();scrollTo(0,0)}
+function startFull(){startQuiz("Full assessment","Full",Q.map((_,i)=>i))}
+function startCat(c){startQuiz(c+" practice",c,Q.map((q,i)=>q[0]==c?i:-1).filter(i=>i>=0))}
+function pick(qi,j){quiz.a[qi]=j}
+function submitQ(){
+  const t={},c={};let sc=0;
+  for(const qi of quiz.items){const q=Q[qi],ok=quiz.a[qi]===q[4];if(ok)sc++;
+    t[q[1]]=t[q[1]]||[0,0];t[q[1]][1]++;c[q[0]]=c[q[0]]||[0,0];c[q[0]][1]++;
+    if(ok){t[q[1]][0]++;c[q[0]][0]++}}
+  const at={ts:Date.now(),kind:quiz.kind,score:sc,total:quiz.items.length,t,c};U().attempts.push(at);api("/attempts","POST",at).catch(()=>{});
+  quiz.done=true;app();scrollTo(0,0);
+}
+function tick(i){const t=TOPICS[i];U().done[t]=!U().done[t];api("/done","POST",{topic:t,value:!!U().done[t]}).catch(()=>{})}
+function reset(){U().attempts=[];U().done={};api("/progress","DELETE").catch(()=>{});app()}
+
+function bar(c,v){const p=pc(v);return `<div class="card"><b>${c}</b><span class="mut" style="float:right">${p==null?"Not attempted":p+"%"}</span><div class="meter"><i style="width:${p||0}%"></i></div></div>`}
+
+function authV(){return `<div class="auth"><h1>Smart Placement Preparation Protocol</h1><p class="mut">Find your weak topics, follow a study plan and track your placement readiness.</p>
+<div class="card"><div class="tabs"><button class="${mode=="login"?"on":""}" onclick="setMode('login')">Log in</button><button class="${mode=="reg"?"on":""}" onclick="setMode('reg')">Create account</button></div>
+${mode=="reg"?'<label>Name<input type="text" id="n" autocomplete="name"></label>':""}
+<label>Email<input type="email" id="e" autocomplete="email"></label>
+<label>Password<input type="password" id="p" autocomplete="current-password"></label>
+<p class="err" role="alert">${esc(msg)}</p>
+<button class="pri" onclick="auth()">${mode=="reg"?"Create account":"Log in"}</button></div>
+</div>`}
+
+function home(){
+  const s=stats(),n=U().attempts.length,w=weakList().slice(0,3);
+  return `<h2>Hi, ${esc(user.name)}</h2>
+<div class="hero"><div class="big">${ready()}%</div><div><b>Placement readiness</b><p class="mut">${n?"Average accuracy across aptitude, programming and core CS.":"Take the full assessment to get your first score."}</p><button class="pri" onclick="startFull()">${n?"Retake full assessment":"Start assessment"}</button></div></div>
+<div class="grid">${CATS.map(c=>bar(c,s.c[c])).join("")}</div>
+<h3>Focus next</h3>${n?(w.length?w.map(x=>`<div class="row"><span>${x.t}</span><span class="mut">${x.p==null?"Not attempted":x.p+"%"}</span></div>`).join(""):'<p class="mut">No weak topics. Keep practising to stay sharp.</p>'):'<p class="mut">Your weakest topics appear here after the first assessment.</p>'}`}
+
+function quizV(){
+  const z=quiz;
+  let h=`<h2>${z.title}</h2>`;
+  h+=z.items.map((qi,i)=>{const q=Q[qi];
+    return `<div class="card"><p><b>${i+1}.</b> ${esc(q[2])} <span class="tag">${esc(q[1])}</span></p>`+
+    q[3].map((o,j)=>{let cl="";if(z.done){if(j==q[4])cl="ok";else if(z.a[qi]===j)cl="bad"}
+      return `<label class="opt ${cl}" style="font-weight:400"><input type="radio" name="q${qi}" ${z.a[qi]===j?"checked":""} ${z.done?"disabled":""} onchange="pick(${qi},${j})">${esc(o)}</label>`}).join("")+`</div>`}).join("");
+  if(z.done){const a=U().attempts.at(-1);
+    h+=`<div class="card"><b>Score: ${a.score}/${a.total} (${Math.round(100*a.score/a.total)}%)</b><p class="mut">Correct answers are in green, your wrong picks in red.</p><button class="pri" onclick="go('plan')">See study plan</button> <button onclick="go('test')">Back to practice</button></div>`}
+  else h+=`<button class="pri" onclick="submitQ()">Submit answers</button>`;
+  return h}
+
+function test(){
+  if(quiz)return quizV();
+  return `<h2>Practice</h2><div class="card"><b>Full assessment</b><p class="mut">All 18 questions. Best way to find your weak topics.</p><button class="pri" onclick="startFull()">Start full assessment</button></div>
+<h3>Practise one area</h3><div class="grid">${CATS.map(c=>`<div class="card"><b>${c}</b><p class="mut">6 questions</p><button onclick="startCat('${c}')">Start</button></div>`).join("")}</div>`}
+
+function plan(){
+  if(!U().attempts.length)return `<h2>Study plan</h2><p class="mut">Your plan is built from your weak topics. Take an assessment first.</p><button class="pri" onclick="startFull()">Start assessment</button>`;
+  const w=weakList();
+  return `<h2>Study plan</h2><p class="mut">Topics below 70% or not yet attempted, weakest first. Tick tasks off as you finish them.</p>`+
+  (w.length?w.map(x=>`<label class="card task" style="font-weight:400"><input type="checkbox" ${U().done[x.t]?"checked":""} onchange="tick(${x.i})"><span><b>${x.t}</b> <span class="tag">${x.p==null?"not attempted":x.p+"%"}</span><br>${RES[x.t]}</span></label>`).join(""):'<p>Every topic is at 70% or above. Retake a practice set weekly to stay sharp.</p>')}
+
+function prog(){
+  const A=U().attempts,s=stats(),done=Object.values(U().done).filter(Boolean).length;
+  if(!A.length)return `<h2>Progress</h2><p class="mut">No attempts yet. Your scores will show up here.</p>`;
+  const last=A.slice(-10);
+  return `<h2>Progress</h2><div class="grid"><div class="card"><b>${A.length}</b><br><span class="mut">attempts</span></div><div class="card"><b>${done}</b><br><span class="mut">plan tasks done</span></div><div class="card"><b>${ready()}%</b><br><span class="mut">readiness</span></div></div>
+<h3>Recent scores</h3><div class="chart" role="img" aria-label="Score per attempt">${last.map(a=>`<div title="${Math.round(100*a.score/a.total)}%" style="height:${Math.max(4,Math.round(100*a.score/a.total))}%"></div>`).join("")}</div>
+<h3>Topic accuracy</h3>${TOPICS.map(t=>{const p=pc(s.t[t]);return `<div class="row"><span>${t}</span><span class="mut">${p==null?"-":p+"%"}</span></div>`}).join("")}
+<h3>History</h3><div class="scroll"><table><tr><th>Date</th><th>Type</th><th>Score</th></tr>${A.slice().reverse().map(a=>`<tr><td>${new Date(a.ts).toLocaleDateString()}</td><td>${esc(a.kind)}</td><td>${a.score}/${a.total}</td></tr>`).join("")}</table></div>
+<p><button class="ghost" onclick="reset()">Reset my progress</button></p>`}
+
+function app(){
+  const r=$("#app");
+  if(!me){r.innerHTML=authV();return}
+  const tabs=[["home","Dashboard"],["test","Practice"],["plan","Study plan"],["prog","Progress"]];
+  r.innerHTML=`<header><span class="brand">SPPP</span><nav>${tabs.map(([k,l])=>`<button class="${view==k?"on":""}" onclick="go('${k}')">${l}</button>`).join("")}</nav><button class="ghost" onclick="out()">Log out</button></header><main>${{home,test,plan,prog}[view]()}</main>`;
+}
+(async()=>{if(tok()){try{await loadData()}catch(e){out()}}app()})();
+</script>
+</body>
+</html>
